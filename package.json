@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "cra-template": "1.2.0",
+    "lodash": "^4.17.21",
     "quill": "^2.0.3",
     "quill-cursors": "^4.0.3",
     "react": "^19.0.0",

@@ -41,7 +41,7 @@ In addition to the client setup, you also need to clone and set up the server co
 
 1. Clone the server repository:
     ```sh
-    git clone https://github.com/yourusername/multiple-user-text-editor-server.git
+    git clone https://github.com/Monika-dhiman/multiple-user-text-editor-server
     ```
 2. Navigate to the server project directory:
     ```sh
