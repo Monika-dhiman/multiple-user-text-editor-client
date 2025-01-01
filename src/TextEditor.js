@@ -10,7 +10,6 @@ Quill.register("modules/cursors", QuillCursors);
 
 const SERVER_CONNECTION_URL =
   process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
-const SAVE_INTERVAL_MS = 2000;
 
 const useSocket = (socket, quill, cursors) => {
   useEffect(() => {
@@ -92,6 +91,7 @@ const TextEditor = () => {
     if (!quill || !socket) return;
 
     socket.once("load-document", (document) => {
+      console.log("Document loaded", document);
       quill.setContents(document);
       quill.enable();
     });
@@ -101,20 +101,9 @@ const TextEditor = () => {
 
   useEffect(() => {
     if (!quill || !socket) return;
-
-    const interval = setInterval(() => {
-      socket.emit("save-document", quill.getContents());
-    }, SAVE_INTERVAL_MS);
-
-    return () => clearInterval(interval);
-  }, [socket, quill]);
-
-  useEffect(() => {
-    if (!quill || !socket) return;
-
     const textChangeHandler = (delta, oldDelta, source) => {
       if (source !== "user") return;
-      socket.emit("send-changes", delta);
+      socket.emit("send-changes", { delta, data: quill.getContents() });
     };
 
     quill.on("text-change", textChangeHandler);
