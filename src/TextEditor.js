@@ -74,6 +74,16 @@ const TextEditor = () => {
   const [quill, setQuill] = useState(null);
   const [cursors, setCursors] = useState(null);
 
+  const sendChanges = (delta) => {
+    socket.emit("send-changes", delta);
+  };
+
+  const saveChanges = () => {
+    setTimeout(() => {
+      socket.emit("save-document", quill.getContents());
+    }, 3000);
+  };
+
   useEffect(() => {
     const socketConnection = io(SERVER_CONNECTION_URL);
     setSocket(socketConnection);
@@ -91,7 +101,6 @@ const TextEditor = () => {
     if (!quill || !socket) return;
 
     socket.once("load-document", (document) => {
-      console.log("Document loaded", document);
       quill.setContents(document);
       quill.enable();
     });
@@ -101,15 +110,18 @@ const TextEditor = () => {
 
   useEffect(() => {
     if (!quill || !socket) return;
+
     const textChangeHandler = (delta, oldDelta, source) => {
       if (source !== "user") return;
-      socket.emit("send-changes", { delta, data: quill.getContents() });
+      sendChanges(delta);
+      saveChanges();
     };
 
     quill.on("text-change", textChangeHandler);
 
     return () => {
       quill.off("text-change", textChangeHandler);
+      clearTimeout(saveChanges);
     };
   }, [socket, quill]);
 
